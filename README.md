@@ -1,4 +1,9 @@
-# server-dotfiles
-Actually more like setupfiles but I like the sound of dotfiles better.
+# tenseoverflow's infrastructure
 
-I currently manage 4 Oracle Cloud instances and a NAS at home.
+Setup for my servers.
+
+## Layout
+
+My servers are as follows:
+
+I manage 4 Ubuntu LTS Oracle Cloud instances and a Fedora NAS server.
