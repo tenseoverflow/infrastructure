@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    hostname: "vaultwarden"
+    container_name: vaultwarden
+    restart: always
+    ports:
+      - 8083:80
+      - 3012:3012
+    environment:
+      WEBSOCKET_ENABLED: "true" # Enable WebSocket notifications.
+      SMTP_HOST:
+      SMTP_FROM:
+      SMTP_SSL: true
+      SMTP_USERNAME:
+      SMTP_PASSWORD: ""
+      YUBICO_CLIENT_ID:
+      YUBICO_SECRET_KEY:
+      SIGNUPS_DOMAINS_WHITELIST:
+      SHOW_PASSWORD_HINT: false
+      ENABLE_DB_WAL: true
+      INVITATIONS_ALLOWED: false
+      DOMAIN:
+      ADMIN_TOKEN:
+    volumes:
+      - /opt/vw-data:/data
+
+volumes:
+  vaultwarden-vol:
