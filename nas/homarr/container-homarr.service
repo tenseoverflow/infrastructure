@@ -1,0 +1,38 @@
+# homarr.service
+
+[Unit]
+Description=Podman homarr.service
+Documentation=man:podman-generate-systemd(1)
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+TimeoutStopSec=70
+ExecStart=/usr/bin/podman run \
+	--cidfile=%t/%n.ctr-id \
+	--cgroups=no-conmon \
+	--rm \
+	--sdnotify=conmon \
+	--replace \
+	--name=homarr \
+	-d \
+	--label io.containers.autoupdate=registry \
+	--label PODMAN_SYSTEMD_UNIT="container-homarr.service" \
+	-v /home/hen/infrastructure/nas/homarr/homarr/configs:/app/data/configs:Z \
+	-v /home/hen/infrastructure/nas/homarr/homarr/icons:/app/public/icons:Z \
+	-p 7575:7575 ghcr.io/ajnart/homarr:latest
+ExecStop=/usr/bin/podman stop \
+	--ignore -t 10 \
+	--cidfile=%t/%n.ctr-id
+ExecStopPost=/usr/bin/podman rm \
+	-f \
+	--ignore -t 10 \
+	--cidfile=%t/%n.ctr-id
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=default.target

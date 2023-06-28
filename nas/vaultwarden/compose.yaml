@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+  vaultwarden:
+    image: docker.io/vaultwarden/server:latest
+    labels:
+      - "io.containers.autoupdate=registry"
+      - "PODMAN_SYSTEMD_UNIT=container-vaultwarden.service"
+    hostname: "vaultwarden"
+    container_name: vaultwarden
+    ports:
+      - 8082:80
+      - 3012:3012
+    environment:
+      WEBSOCKET_ENABLED: "true" # Enable WebSocket notifications.
+      SMTP_HOST: 
+      SMTP_FROM: 
+      SMTP_SSL: "true"
+      SMTP_SECURITY: "starttls"
+      SMTP_USERNAME: 
+      SMTP_PASSWORD: 
+      YUBICO_CLIENT_ID: 
+      YUBICO_SECRET_KEY: 
+      SIGNUPS_ALLOWED: "false"
+      SHOW_PASSWORD_HINT: "false"
+      ENABLE_DB_WAL: "true"
+      INVITATIONS_ALLOWED: "false"
+      LOG_FILE: "/data/vaultwarden.log"
+      DOMAIN: 
+      ADMIN_TOKEN: 
+        #env-file:
+        #  - .env
+    volumes:
+      - vw-data:/data
+    restart: always
+
+volumes:
+  vw-data:
+    name: vw-data

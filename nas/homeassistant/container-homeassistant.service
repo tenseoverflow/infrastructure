@@ -1,0 +1,41 @@
+[Unit]
+Description=Home Assistant Container
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+# Wants=container-zwave.service
+#Wants=container-zigbee.service
+# After=container-zwave.service
+#After=container-zigbee.service
+
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n TZ=Europe/Tallinn WATCHDOG_USEC=5000000
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=70
+# Note: this is using https://github.com/brianegge/home-assistant-sdnotify.
+# Once installed, uncomment the `WatchdogSec` line below
+# and change `--sdnotify=conmon` to `--sdnotify=container`.
+# WatchdogSec=60
+ExecStartPre=/bin/rm -f %t/%n.ctr-id
+ExecStart=/usr/bin/podman run \
+                          --cidfile=%t/%n.ctr-id \
+                          --cgroups=no-conmon \
+                          --rm \
+                          --sdnotify=conmon \
+                          --replace \
+                          --detach \
+                          --label "io.containers.autoupdate=registry" \
+			  --label PODMAN_SYSTEMD_UNIT="container-homeasssistant.service" \
+                          --name=homeassistant \
+                          --volume=homeassistant_data:/config:z \
+                          --network=host \
+                          ghcr.io/home-assistant/home-assistant:stable
+ExecStop=/usr/bin/podman stop --ignore --cidfile=%t/%n.ctr-id
+ExecStopPost=/usr/bin/podman rm -f --ignore --cidfile=%t/%n.ctr-id
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=default.target
